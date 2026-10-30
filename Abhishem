@@ -1,0 +1,55 @@
+
+name: Build SWAAH APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'SWAAH_Phase1_Android_Starter.zip'
+      - '.github/workflows/android.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses
+          "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Extract project
+        run: |
+          unzip -q SWAAH_Phase1_Android_Starter.zip -d /tmp/swaah
+          PROJECT=$(find /tmp/swaah -name settings.gradle.kts -printf '%h\n' | head -1)
+          test -n "$PROJECT"
+          cp -R "$PROJECT"/. .
+
+      - name: Install Gradle
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.13-bin.zip
+          unzip -q gradle-8.13-bin.zip -d /tmp
+          echo "/tmp/gradle-8.13/bin" >> "$GITHUB_PATH"
+
+      - name: Build APK
+        run: gradle assembleDebug
+
+      - name: Upload SWAAH APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SWAAH-APK
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

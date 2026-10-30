@@ -16,9 +16,11 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v5
+      - name: Setup Java
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -36,7 +38,7 @@ jobs:
           test -n "$PROJECT"
           cp -R "$PROJECT"/. .
 
-              - name: Install Gradle
+      - name: Install Gradle
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.13-bin.zip
           unzip -q gradle-8.13-bin.zip -d /tmp
@@ -45,7 +47,9 @@ jobs:
       - name: Build APK
         run: gradle assembleDebug
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload SWAAH APK
+        uses: actions/upload-artifact@v4
         with:
           name: SWAAH-APK
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

@@ -36,7 +36,7 @@ jobs:
           test -n "$PROJECT"
           cp -R "$PROJECT"/. .
 
-                  - name: Install Gradle
+        - name: Install Gradle
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.13-bin.zip
           unzip -q gradle-8.13-bin.zip -d /tmp

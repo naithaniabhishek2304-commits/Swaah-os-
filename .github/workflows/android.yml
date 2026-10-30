@@ -36,11 +36,11 @@ jobs:
           test -n "$PROJECT"
           cp -R "$PROJECT"/. .
 
-            name: Install Gradle I will
-            run: |
-          wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip
-          unzip -q gradle-8.9-bin.zip -d /tmp
-          echo "/tmp/gradle-8.9/bin" >> "$GITHUB_PATH"
+                  - name: Install Gradle
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.13-bin.zip
+          unzip -q gradle-8.13-bin.zip -d /tmp
+          echo "/tmp/gradle-8.13/bin" >> "$GITHUB_PATH"
 
       - name: Build APK
         run: gradle assembleDebug
